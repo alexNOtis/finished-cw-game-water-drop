@@ -13,6 +13,24 @@ let winning_messages = ["Congrats! You got a great score!", "WOW! Look at that s
 let losing_messages = ["Ooof, try again!", "Try again...", "Don't give up now! Try again!"];
 let score = 0;
 
+const difficultyModes = {
+  easy: { duration: 30, spawnInterval: 1200, fallDuration: 5, targetScore: 15 },
+  normal: { duration: 30, spawnInterval: 1000, fallDuration: 4, targetScore: 20 },
+  hard: { duration: 20, spawnInterval: 700, fallDuration: 3, targetScore: 25 }
+};
+
+const difficultySelect = document.getElementById('difficulty');
+let activeDifficulty = difficultyModes[difficultySelect.value];
+
+function updateDifficultyPreview() {
+  activeDifficulty = difficultyModes[difficultySelect.value];
+  displayedTimer.textContent = activeDifficulty.duration;
+  tagline.textContent = `Catch ${activeDifficulty.targetScore} drops in ${activeDifficulty.duration} seconds on ${difficultySelect.options[difficultySelect.selectedIndex].text} mode.`;
+}
+
+difficultySelect.addEventListener('change', updateDifficultyPreview);
+updateDifficultyPreview();
+
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
 
@@ -21,14 +39,18 @@ function startGame() {
   if (gameRunning) return;
 
   gameRunning = true;
+  difficultySelect.disabled = true;
+  activeDifficulty = difficultyModes[difficultySelect.value];
+  gameScreen.querySelectorAll('.water-drop').forEach(drop => drop.remove());
 
-  // Create new drops every second (1000 milliseconds)
-  dropMaker = setInterval(createDrop, 1000);
+  // Create drops using the pace configured for the selected difficulty
+  dropMaker = setInterval(createDrop, activeDifficulty.spawnInterval);
 
   // Reset the game state before starting a new game
   score = 0;
   displayedScore.textContent = score;
-  displayedTimer.textContent = 30; // Reset the timer to 30 seconds
+  displayedTimer.textContent = activeDifficulty.duration;
+  tagline.textContent = `Catch ${activeDifficulty.targetScore} drops before time runs out!`;
 
 // Loop for the timer, and controls when timer is "up" (game over)
   let timerLoop = setInterval(() => {
@@ -63,8 +85,8 @@ function createDrop() {
   const xPosition = Math.random() * (gameWidth - 60);
   drop.style.left = xPosition + "px";
 
-  // Make drops fall for 4 seconds
-  drop.style.animationDuration = "4s";
+  // Make drops fall faster at higher difficulties
+  drop.style.animationDuration = `${activeDifficulty.fallDuration}s`;
 
   // Add the new drop to the game screen
   document.getElementById("game-container").appendChild(drop);
@@ -79,13 +101,15 @@ function createDrop() {
 function ended_game(){
   const randomString = Math.floor(Math.random() * winning_messages.length);
 
-  if (score >= 20){
-    tagline.textContent = winning_messages[randomString];
+  if (score >= activeDifficulty.targetScore){
+    tagline.textContent = `${winning_messages[randomString]} Target: ${activeDifficulty.targetScore}.`;
   } else {
-    tagline.textContent = losing_messages[randomString];
+    tagline.textContent = `${losing_messages[randomString]} You needed ${activeDifficulty.targetScore} drops.`;
   }
 
+  gameScreen.querySelectorAll('.water-drop').forEach(drop => drop.remove());
   gameRunning = false;
+  difficultySelect.disabled = false;
 }
 
 // Function to update the score when a water drop is clicked

@@ -41,7 +41,7 @@ body {
     padding: 24px 0;
     background-color: #fffdf4;
     color: var(--ink);
-    font-family: "Proxima Nova", Avenir, "Avenir Next", sans-serif;
+    font-family: Montserrat, "Proxima Nova", Avenir, "Avenir Next", sans-serif;
 }
 
 .game-wrapper {
@@ -102,6 +102,41 @@ body {
 
 #start-btn:hover {
     background-color: #e8b600;
+}
+
+.game-footer {
+    width: 100%;
+    padding-top: 4px;
+    color: #4b5b63;
+    font-size: 14px;
+    text-align: center;
+}
+
+.game-footer a {
+    color: var(--brand-blue);
+    font-weight: 700;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.game-footer a:hover {
+    color: #1678bd;
+}
+
+.difficulty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+}
+
+.difficulty-control select {
+    padding: 7px 10px;
+    border: 1px solid #a9cfe3;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
 }
 
 .score {
@@ -169,8 +204,15 @@ body {
     }
 
     .score-panel {
+        flex-wrap: wrap;
         gap: 10px;
         padding: 10px;
+    }
+
+    .difficulty-control {
+        order: 3;
+        width: 100%;
+        justify-content: center;
     }
 
     .score,
